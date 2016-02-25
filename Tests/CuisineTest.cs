@@ -83,10 +83,10 @@ namespace FavoriteRestaurants
     public void Test_Update_UpdatesCuisineInDatabase()
     {
       //Arrange
-      string CuisineName = "Michael's";
+      string CuisineName = "greek";
       Cuisine testCuisine = new Cuisine(CuisineName);
       testCuisine.Save();
-      string newCuisineName = "Nancy's";
+      string newCuisineName = "greek";
 
       //Act
       testCuisine.Update(newCuisineName);

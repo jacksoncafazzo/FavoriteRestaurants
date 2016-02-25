@@ -25,7 +25,7 @@ namespace FavoriteRestaurants
       };
 
       Post["/add_eats/"] = _ => {
-        Restaurant newRestaurant = new Restaurant(Request.Form["restaurant"], Request.Form["cuisine_id"]);
+        Restaurant newRestaurant = new Restaurant(Request.Form["restaurant"], Request.Form["description"], Request.Form["cuisine_id"]);
         newRestaurant.Save();
         List<Restaurant> allRestaurants = Restaurant.GetAll();
         return View["rest_results.cshtml", allRestaurants];

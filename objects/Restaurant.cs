@@ -9,12 +9,14 @@ namespace FavoriteRestaurants
     private int _id;
     private string _name;
     private int _cuisineId;
+    private string _description;
 
-    public Restaurant(string Name, int CuisineId, int Id = 0)
+    public Restaurant(string Name, string Description, int CuisineId, int Id = 0)
     {
       _id = Id;
       _name = Name;
       _cuisineId = CuisineId;
+      _description = Description;
     }
     public override bool Equals(System.Object otherRestaurant)
     {
@@ -36,6 +38,7 @@ namespace FavoriteRestaurants
     {
       return _id;
     }
+    
     public string GetName()
     {
       return _name;
@@ -48,7 +51,10 @@ namespace FavoriteRestaurants
     {
       return _cuisineId;
     }
-
+    public string GetDescription()
+    {
+      return _description;
+    }
     public static void DeleteAll()
     {
       SqlConnection conn = DB.Connection();
@@ -63,13 +69,17 @@ namespace FavoriteRestaurants
       SqlDataReader rdr = null;
       conn.Open();
 
-      SqlCommand cmd = new SqlCommand("INSERT INTO restaurants (name, cuisine_id) OUTPUT INSERTED.id VALUES (@RestaurantName, @CuisineId);", conn);
+      SqlCommand cmd = new SqlCommand("INSERT INTO restaurants (name, description, cuisine_id) OUTPUT INSERTED.id VALUES (@RestaurantName, @RestaurantDescription, @CuisineId);", conn);
 
       SqlParameter NameParameter = new SqlParameter();
       NameParameter.ParameterName = "@RestaurantName";
       NameParameter.Value = this.GetName();
       cmd.Parameters.Add(NameParameter);
 
+      SqlParameter DescriptionParameter = new SqlParameter();
+      DescriptionParameter.ParameterName = "@RestaurantDescription";
+      DescriptionParameter.Value = this.GetDescription();
+      cmd.Parameters.Add(DescriptionParameter);
 
       SqlParameter CuisineIdParameter = new SqlParameter();
       CuisineIdParameter.ParameterName = "@CuisineId";
@@ -108,7 +118,8 @@ namespace FavoriteRestaurants
         int RestaurantId = rdr.GetInt32(0);
         string RestaurantName = rdr.GetString(1);
         int newCuisineId = rdr.GetInt32(2);
-        Restaurant newRestaurant = new Restaurant(RestaurantName, RestaurantId, newCuisineId);
+        string RestaurantDescription = rdr.GetString(3);
+        Restaurant newRestaurant = new Restaurant(RestaurantName, RestaurantDescription, RestaurantId, newCuisineId);
         allRestaurants.Add(newRestaurant);
       }
       if (rdr != null)
@@ -136,13 +147,17 @@ namespace FavoriteRestaurants
       rdr = cmd.ExecuteReader();
 
       int foundRestaurantId = 0;
+      string foundRestaurantName = null;
       string foundRestaurantDescription = null;
+      int foundRestaurantCuisineId = 0;
       while(rdr.Read())
       {
         foundRestaurantId = rdr.GetInt32(0);
-        foundRestaurantDescription = rdr.GetString(1);
+        foundRestaurantName = rdr.GetString(1);
+        foundRestaurantDescription = rdr.GetString(3);
+        foundRestaurantCuisineId = rdr.GetInt32(2);
       }
-      Restaurant foundRestaurant = new Restaurant(foundRestaurantDescription, foundRestaurantId);
+      Restaurant foundRestaurant = new Restaurant(foundRestaurantName, foundRestaurantDescription, foundRestaurantCuisineId, foundRestaurantId);
 
       if (rdr != null)
       {
