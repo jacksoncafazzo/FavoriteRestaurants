@@ -83,6 +83,26 @@ namespace FavoriteRestaurants
       Assert.Equal(testRestaurant.GetName(), foundRestaurant.GetName());
     }
     [Fact]
+    public void Test_FindByCuisine_FindsRestaurantsInDatabaseByCuisine()
+    {
+      //Arrange
+      Restaurant testRestaurant = new Restaurant("Larrys Hoagies","Big sandwiches",1);
+      Restaurant OtherTestRestaurant = new Restaurant("Mitch's Subs","Really big sandwiches",1);
+      testRestaurant.Save();
+      OtherTestRestaurant.Save();
+      string otherReturnString = "";
+      //Act
+      List<Restaurant> restaurantsByCuisine = Restaurant.GetByCuisine(testRestaurant.GetCuisineId());
+      foreach (Restaurant restaurant in restaurantsByCuisine)
+      {
+        otherReturnString = otherReturnString + restaurant.GetName() + ", ";
+      }
+      otherReturnString = otherReturnString.Remove(otherReturnString.Length - 2);
+      string testString = testRestaurant.GetName() + ", " + OtherTestRestaurant.GetName();
+      //Assert
+      Assert.Equal(testString, otherReturnString);
+    }
+    [Fact]
     public void Test_DeleteAll_DeletesAllRestaurantsInDatabase()
     {
       //Arrange

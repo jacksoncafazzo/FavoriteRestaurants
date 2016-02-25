@@ -38,7 +38,7 @@ namespace FavoriteRestaurants
     {
       return _id;
     }
-    
+
     public string GetName()
     {
       return _name;
@@ -132,6 +132,41 @@ namespace FavoriteRestaurants
       }
 
       return allRestaurants;
+    }
+    public static List<Restaurant> GetByCuisine(int cuisineId)
+    {
+      List<Restaurant> restaurantsByCuisine = new List<Restaurant>{};
+
+      SqlConnection conn = DB.Connection();
+      SqlDataReader rdr = null;
+      conn.Open();
+
+      SqlCommand cmd = new SqlCommand("SELECT * FROM restaurants WHERE cuisine_id = @CuisineId;", conn);
+      SqlParameter RestaurantCuisineIdParameter = new SqlParameter();
+      RestaurantCuisineIdParameter.ParameterName = "@CuisineId";
+      RestaurantCuisineIdParameter.Value = cuisineId;
+      cmd.Parameters.Add(RestaurantCuisineIdParameter);
+      rdr = cmd.ExecuteReader();
+
+      while(rdr.Read())
+      {
+        int RestaurantId = rdr.GetInt32(0);
+        string RestaurantName = rdr.GetString(1);
+        int newCuisineId = rdr.GetInt32(2);
+        string RestaurantDescription = rdr.GetString(3);
+        Restaurant newRestaurant = new Restaurant(RestaurantName, RestaurantDescription, RestaurantId, newCuisineId);
+        restaurantsByCuisine.Add(newRestaurant);
+      }
+      if (rdr != null)
+      {
+        rdr.Close();
+      }
+      if (conn != null)
+      {
+        conn.Close();
+      }
+
+      return restaurantsByCuisine;
     }
     public static Restaurant Find(int id)
     {
